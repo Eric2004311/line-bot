@@ -1,6 +1,7 @@
 from ast import expr_context
 from tkinter import S
 from flask import Flask, request, abort
+import os
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -14,10 +15,9 @@ from linebot.models import (
 
 app = Flask(__name__)
 
-line_bot_api = LineBotApi('017Ztelu1iHkntih/JEUALbYGT3WWvvDq4xxr9+JSVIQRHoFsz7zYCMp9smy1RKXASCdusmlELRDkPikzWtNb4PBvCF8yNZuMANxhcEMs9CYWs3/qPSb8X5AMkyqpndr3zLXEHK+OYowJ/cTnvcE7AdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('f0fcee652263244dfccb18e4001c4f49')
+line_bot_api = LineBotApi(os.environ['Token'])
+handler = WebhookHandler(os.environ['ChannelSecret'])
 
-import json
 import requests
 
 data = requests.get("https://data.epa.gov.tw/api/v1/aqx_p_432?limit=1000&api_key=9be7b239-557b-4c10-9775-78cadfc555e9&format=json").json()
@@ -25,6 +25,9 @@ data = requests.get("https://data.epa.gov.tw/api/v1/aqx_p_432?limit=1000&api_key
 a = data["records"][0]["SiteName"]
 print(a)
 
+@app.route('/')  # '/' for the default page
+def flaskHome():
+  return "OK"
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -63,4 +66,4 @@ def handle_message(event):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0")
